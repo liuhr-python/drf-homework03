@@ -33,6 +33,18 @@ class Book(BaseModel):
     def __str__(self):
         return self.book_name
 
+    # 自定义序列化字段  作为类属性
+    @property
+    def publish_name(self):
+        return self.publish.press_name
+
+    @property
+    def press_address(self):
+        return self.publish.address
+
+    @property
+    def author_list(self):
+        return self.authors.values("author_name", "age", "detail__phone")
 
 # 出版社表
 class Press(BaseModel):

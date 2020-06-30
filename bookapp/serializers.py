@@ -12,7 +12,7 @@ class PressModelSerializer(serializers.ModelSerializer):
         # 指定序列化的模型
         model = Press
         # 指定要序列化的字段
-        fields = ("press_name", "address", "pic")
+        fields = ("press_name", "address", "pic",)
 
 
 class BookModelSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class BookModelSerializer(serializers.ModelSerializer):
         # 指定当前序列化器要序列化的模型
         model = Book
         # 指定你要序列化模型的字段
-        fields = ("book_name", "price", "pic", "publish")
+        fields = ("book_name", "price", "pic", "publish","publish_name", "press_address", "author_list")
 
         # 直接查询所有字段
         # fields = "__all__"
