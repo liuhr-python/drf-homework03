@@ -186,3 +186,29 @@ class BookAPIViewV2(APIView):
             "message": "更新成功",
             "results": BookModelSerializerV2(book_obj).data
         })
+
+    # 修改单个的部分信息
+    def patch(self, request, *args, **kwargs):
+
+        request_data = request.data
+        book_id = kwargs.get("id")
+
+        try:
+            book_obj = Book.objects.get(pk=book_id)
+        except:
+            return Response({
+                "status": status.HTTP_400_BAD_REQUEST,
+                "message": "图书不存在"
+            })
+        # 修改 需要指定instance参数
+        # 修改局部需要指定 partial=True  代表可以修改局部字段
+        book_ser = BookModelSerializerV2(data=request_data, instance=book_obj, partial=True)
+        book_ser.is_valid(raise_exception=True)
+
+        book_ser.save()
+
+        return Response({
+            "status": status.HTTP_400_BAD_REQUEST,
+            "message": "更新成功",
+            "results": BookModelSerializerV2(book_obj).data
+        })
