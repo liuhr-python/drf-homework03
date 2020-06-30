@@ -4,7 +4,7 @@ from rest_framework import status
 
 from bookapp.models import Book
 from .serializers import BookModelSerializer  # 导入序列化
-
+from .serializers import BookDeModelSerializer  # 导入反序列化
 
 class BookAPIView(APIView):
 
@@ -32,3 +32,20 @@ class BookAPIView(APIView):
                 "results": book_list_ser
             })
 
+    # 添加信息
+    def post(self, request, *args, **kwargs):
+
+        request_data = request.data
+
+        # 将前端发送过来的数据交给反序列化器进行校验
+        book_ser = BookDeModelSerializer(data=request_data)
+
+        # 校验数据是否合法 raise_exception：一旦校验失败 立即抛出异常
+        book_ser.is_valid(raise_exception=True)
+        book_obj = book_ser.save()
+
+        return Response({
+            "status": status.HTTP_200_OK,
+            "message": "添加图书成功",
+            "result": BookModelSerializer(book_obj).data
+        })
