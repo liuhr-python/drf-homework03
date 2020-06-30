@@ -157,3 +157,32 @@ class BookAPIViewV2(APIView):
             "status": status.HTTP_400_BAD_REQUEST,
             "message": "删除失败或图书不存在"
         })
+
+    # 修改单个的整体信息
+    def put(self, request, *args, **kwargs):
+
+        # 修改的参数
+        request_data = request.data
+        # 要修改的图书的id
+        book_id = kwargs.get("id")
+
+        try:
+            book_obj = Book.objects.get(pk=book_id)
+        except:
+            return Response({
+                "status": status.HTTP_400_BAD_REQUEST,
+                "message": "图书不存在"
+            })
+
+        #  指定instance参数  指定修改的实例
+        book_ser = BookModelSerializerV2(data=request_data, instance=book_obj, partial=False)
+        book_ser.is_valid(raise_exception=True)
+
+        # 经过序列化器规则校验 局部全局钩子校验通过后则调用 update()方法完成更新
+        book_ser.save()
+
+        return Response({
+            "status": status.HTTP_400_BAD_REQUEST,
+            "message": "更新成功",
+            "results": BookModelSerializerV2(book_obj).data
+        })
