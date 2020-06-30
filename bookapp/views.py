@@ -35,11 +35,36 @@ class BookAPIView(APIView):
     # 添加信息
     def post(self, request, *args, **kwargs):
 
+        # 添加单个  （暂时与多个独立存在）
+        # request_data = request.data
+        #
+        # # 将前端发送过来的数据交给反序列化器进行校验
+        # book_ser = BookDeModelSerializer(data=request_data)
+        #
+        # # 校验数据是否合法 raise_exception：一旦校验失败 立即抛出异常
+        # book_ser.is_valid(raise_exception=True)
+        # book_obj = book_ser.save()
+        #
+        # return Response({
+        #     "status": status.HTTP_200_OK,
+        #     "message": "添加图书成功",
+        #     "result": BookModelSerializer(book_obj).data
+        # })
+
+        # 添加多个
         request_data = request.data
+        if isinstance(request_data, dict):  # 代表增加的是单个图书
+            # 将前端发送过来的数据交给反序列化器进行校验
+            many = False
+        elif isinstance(request_data, list):  # 代表添加多个图书
+            many = True
+        else:
+            return Response({
+                "status": status.HTTP_400_BAD_REQUEST,
+                "message": "请求参数格式有误",
+            })
 
-        # 将前端发送过来的数据交给反序列化器进行校验
-        book_ser = BookDeModelSerializer(data=request_data)
-
+        book_ser = BookDeModelSerializer(data=request_data, many=many)
         # 校验数据是否合法 raise_exception：一旦校验失败 立即抛出异常
         book_ser.is_valid(raise_exception=True)
         book_obj = book_ser.save()
@@ -47,5 +72,6 @@ class BookAPIView(APIView):
         return Response({
             "status": status.HTTP_200_OK,
             "message": "添加图书成功",
-            "result": BookModelSerializer(book_obj).data
+            # 当群增多个时，无法序列化多个对象到前台  所以报错
+            "result": BookDeModelSerializer(book_obj, many=many).data
         })
